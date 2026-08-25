@@ -1,6 +1,23 @@
 const Message = require('../models/message');
 const AppError = require('../utils/apperror');
 
+// GET /api/announcements (Fetch all announcements globally)
+async function getAllAnnouncements(req, res, next) {
+  try {
+    const messages = await Message.find()
+      .sort({ createdAt: -1 })
+      .populate('sender', 'name email role');
+
+    return res.status(200).json({
+      status: 'success',
+      total: messages.length,
+      data: messages,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 // POST /api/announcements (Admin only)
 async function createAnnouncement(req, res, next) {
   try {
@@ -46,4 +63,4 @@ async function getAnnouncementHistory(req, res, next) {
   }
 }
 
-module.exports = { createAnnouncement, getAnnouncementHistory };
+module.exports = { getAllAnnouncements, createAnnouncement, getAnnouncementHistory };
