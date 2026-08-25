@@ -48,6 +48,14 @@ app.use(async (req, res, next) => {
   }
 });
 
+// Root Welcome Route (Fixes 404 when hitting the base Vercel URL)
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Welcome to the Student ID Event Pulse API'
+  });
+});
+
 // Health Check Endpoint
 app.get('/health', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
