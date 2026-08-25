@@ -18,6 +18,8 @@ const categoryRoutes = require('./routes/categoryroutes');
 const app = express();
 const server = http.createServer(app);
 
+// Socket.io (Note: Real-time sockets will only work if hosted on Render/Railway/Fly.io. 
+// On Vercel serverless, REST endpoints work, but WebSockets will not maintain a persistent connection).
 const io = new Server(server, {
   cors: { origin: '*' }
 });
@@ -32,6 +34,18 @@ app.use((req, res, next) => {
   if (req.body) req.body = mongoSanitize.sanitize(req.body);
   if (req.params) req.params = mongoSanitize.sanitize(req.params);
   next();
+});
+
+// Database connection middleware for serverless (Ensures DB connects on Vercel requests)
+app.use(async (req, res, next) => {
+  try {
+    if (mongoose.connection.readyState === 0) {
+      await connectDB();
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Health Check Endpoint
@@ -69,15 +83,14 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-async function start() {
-  await connectDB();
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Only call server.listen when running locally (Not on Vercel serverless)
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+  connectDB().then(() => {
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   });
 }
 
-if (process.env.NODE_ENV !== 'test') {
-  start();
-}
-
+// Export app for Vercel serverless functions
 module.exports = app;
