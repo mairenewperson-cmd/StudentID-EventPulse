@@ -4,6 +4,7 @@ const router = express.Router();
 const requireAuth = require('../middleware/requireauth');
 const requireRole = require('../middleware/requirerole');
 const {
+  getAllAnnouncements,
   createAnnouncement,
   getAnnouncementHistory,
 } = require('../controllers/announcementcontroller');
@@ -39,7 +40,10 @@ const validateGetHistory = [
   handleValidation,
 ];
 
-// POST /api/announcements
+// GET /api/announcements (Fetch all announcements)
+router.get('/', getAllAnnouncements);
+
+// POST /api/announcements (Admin only)
 router.post(
   '/',
   requireAuth,
@@ -48,7 +52,7 @@ router.post(
   createAnnouncement
 );
 
-// GET /api/announcements/:eventId
+// GET /api/announcements/:eventId (Public history by event)
 router.get('/:eventId', validateGetHistory, getAnnouncementHistory);
 
 module.exports = router;
