@@ -105,7 +105,6 @@ GET /api/announcements/:eventId — Fetch historical announcement messages for a
 🌐 Health Check Endpoint
 GET /health — Returns server uptime, operational environment, timestamp, and active MongoDB connection status.
 
-CLONE GITHUB LINK: https://github.com/mairenewperson-cmd/StudentID-EventPulse
-
+CLONE GITHUB LINK: https://github.com/mairenewperson-cmd/200934-EventPulse
 
 
